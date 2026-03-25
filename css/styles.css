@@ -1,0 +1,535 @@
+/* CSS Variables - Clean, Minimal Palette */
+:root {
+    --primary: #4A90D9;
+    --primary-light: #E8F1FA;
+    --study-color: #4A90D9;
+    --work-color: #7B68EE;
+    --workout-color: #FF6B6B;
+    --running-color: #FF8A65;
+    --gym-color: #E57373;
+    --swimming-color: #4FC3F7;
+    --sports-color: #81C784;
+    --text-primary: #2C3E50;
+    --text-secondary: #7F8C8D;
+    --background: #FAFBFC;
+    --surface: #FFFFFF;
+    --border: #E8ECF0;
+    --success: #27AE60;
+    --warning: #F39C12;
+    --shadow: rgba(0, 0, 0, 0.08);
+}
+
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background-color: var(--background);
+    color: var(--text-primary);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--surface);
+}
+
+/* Header */
+.header {
+    padding: 16px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    padding-bottom: 80px;
+}
+
+/* Screens */
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+/* Section Titles */
+.section-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    margin-top: 24px;
+}
+
+.section-title:first-child {
+    margin-top: 0;
+}
+
+/* Activity Grid */
+.activity-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.activity-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 12px;
+    border: none;
+    border-radius: 16px;
+    background: var(--surface);
+    box-shadow: 0 2px 8px var(--shadow);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.activity-btn:active {
+    transform: scale(0.96);
+}
+
+.activity-btn .icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.activity-btn .label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.activity-btn.study { border-left: 4px solid var(--study-color); }
+.activity-btn.work { border-left: 4px solid var(--work-color); }
+.activity-btn.workout { border-left: 4px solid var(--workout-color); }
+
+/* Active Timers */
+.active-timers {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.timer-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 8px var(--shadow);
+    border-left: 4px solid var(--primary);
+}
+
+.timer-card.study { border-left-color: var(--study-color); }
+.timer-card.work { border-left-color: var(--work-color); }
+.timer-card.running { border-left-color: var(--running-color); }
+.timer-card.gym { border-left-color: var(--gym-color); }
+.timer-card.swimming { border-left-color: var(--swimming-color); }
+.timer-card.sports { border-left-color: var(--sports-color); }
+
+.timer-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.timer-icon {
+    font-size: 1.5rem;
+}
+
+.timer-info {
+    flex: 1;
+}
+
+.timer-activity {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.timer-started {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.timer-display {
+    font-size: 2.5rem;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    margin: 16px 0;
+    color: var(--text-primary);
+}
+
+.timer-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.timer-btn {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.timer-btn:active {
+    opacity: 0.8;
+}
+
+.timer-btn.pause {
+    background: var(--warning);
+    color: white;
+}
+
+.timer-btn.resume {
+    background: var(--success);
+    color: white;
+}
+
+.timer-btn.stop {
+    background: var(--workout-color);
+    color: white;
+}
+
+.timer-btn.notes {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 8px 0;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    z-index: 100;
+}
+
+.nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: color 0.15s ease;
+}
+
+.nav-btn.active {
+    color: var(--primary);
+}
+
+.nav-icon {
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+}
+
+.nav-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--surface);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 360px;
+    padding: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.modal-close {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: var(--background);
+    border-radius: 50%;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+/* Notes Input */
+#notes-input {
+    width: 100%;
+    height: 120px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: none;
+    margin-bottom: 16px;
+}
+
+#notes-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Buttons */
+.btn-primary {
+    width: 100%;
+    padding: 14px 24px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-primary:active {
+    opacity: 0.9;
+}
+
+/* Workout Options */
+.workout-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.workout-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--surface);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.workout-option:active {
+    background: var(--primary-light);
+    border-color: var(--primary);
+}
+
+.workout-option .icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.workout-option .label {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* History List */
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.history-date {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-top: 8px;
+}
+
+.history-item {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.history-icon {
+    font-size: 1.5rem;
+}
+
+.history-details {
+    flex: 1;
+}
+
+.history-activity {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.history-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.history-duration {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.history-notes {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    font-style: italic;
+}
+
+/* Analytics */
+.analytics-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    background: var(--background);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.tab-btn.active {
+    background: var(--primary);
+    color: white;
+}
+
+.analytics-summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.summary-card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.summary-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.summary-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.chart-container {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+#analytics-chart {
+    width: 100%;
+    height: 250px;
+}
+
+/* Paused state */
+.timer-card.paused .timer-display {
+    opacity: 0.5;
+}
+
+/* Responsive */
+@media (min-width: 480px) {
+    #app {
+        box-shadow: 0 0 40px var(--shadow);
+    }
+}

@@ -1,0 +1,7 @@
+node_modules/
+.DS_Store
+*.log
+screenshot.py
+app_screenshot.png
+.claude/
+tmpclaude-*

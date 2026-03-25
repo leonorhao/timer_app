@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Time Tracker">
+
+    <title>Activity Time Tracker</title>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <h1>Time Tracker</h1>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Timer Screen -->
+            <section id="timer-screen" class="screen active">
+                <div class="section-title">Start Activity</div>
+
+                <div class="activity-grid" id="activity-buttons">
+                    <!-- Activity buttons rendered by JS -->
+                </div>
+
+                <div class="section-title">Active Timers</div>
+                <div class="active-timers" id="active-timers">
+                    <div class="empty-state" id="no-timers">
+                        No active timers. Tap an activity to start tracking.
+                    </div>
+                </div>
+            </section>
+
+            <!-- History Screen -->
+            <section id="history-screen" class="screen">
+                <div class="section-title">Session History</div>
+                <div id="history-list" class="history-list">
+                    <div class="empty-state">No sessions recorded yet.</div>
+                </div>
+            </section>
+
+            <!-- Analytics Screen -->
+            <section id="analytics-screen" class="screen">
+                <div class="analytics-tabs">
+                    <button class="tab-btn active" data-period="today">Today</button>
+                    <button class="tab-btn" data-period="week">Week</button>
+                    <button class="tab-btn" data-period="month">Month</button>
+                </div>
+
+                <div class="analytics-summary" id="analytics-summary">
+                    <!-- Summary cards rendered by JS -->
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="analytics-chart"></canvas>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-screen="timer-screen">
+                <span class="nav-icon">⏱️</span>
+                <span class="nav-label">Timer</span>
+            </button>
+            <button class="nav-btn" data-screen="history-screen">
+                <span class="nav-icon">📋</span>
+                <span class="nav-label">History</span>
+            </button>
+            <button class="nav-btn" data-screen="analytics-screen">
+                <span class="nav-icon">📊</span>
+                <span class="nav-label">Analytics</span>
+            </button>
+        </nav>
+
+        <!-- Notes Modal -->
+        <div class="modal" id="notes-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Session Notes</h3>
+                    <button class="modal-close" id="close-notes">&times;</button>
+                </div>
+                <textarea id="notes-input" placeholder="Add notes about this session..."></textarea>
+                <button class="btn-primary" id="save-notes">Save Notes</button>
+            </div>
+        </div>
+
+        <!-- Workout Submenu Modal -->
+        <div class="modal" id="workout-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Select Workout Type</h3>
+                    <button class="modal-close" id="close-workout">&times;</button>
+                </div>
+                <div class="workout-options" id="workout-options">
+                    <!-- Workout options rendered by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- App Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/timer.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
