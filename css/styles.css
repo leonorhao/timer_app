@@ -151,8 +151,8 @@ html, body {
 
 .timer-card.study { border-left-color: var(--study-color); }
 .timer-card.work { border-left-color: var(--work-color); }
-.timer-card.running { border-left-color: var(--running-color); }
-.timer-card.gym { border-left-color: var(--gym-color); }
+.timer-card.outdoor_running { border-left-color: var(--running-color); }
+.timer-card.gym_exercise { border-left-color: var(--gym-color); }
 .timer-card.swimming { border-left-color: var(--swimming-color); }
 .timer-card.sports { border-left-color: var(--sports-color); }
 

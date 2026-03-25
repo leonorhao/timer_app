@@ -11,14 +11,14 @@ db.version(1).stores({
 const ACTIVITIES = {
     study: { id: 'study', name: 'Study', icon: '📚', color: '#4A90D9', parent: null },
     work: { id: 'work', name: 'Work', icon: '💼', color: '#7B68EE', parent: null },
-    running: { id: 'running', name: 'Running', icon: '🏃', color: '#FF8A65', parent: 'workout' },
-    gym: { id: 'gym', name: 'Gym', icon: '🏋️', color: '#E57373', parent: 'workout' },
+    outdoor_running: { id: 'outdoor_running', name: 'Outdoor Running', icon: '🏃‍♂️', color: '#FF8A65', parent: 'workout' },
+    gym_exercise: { id: 'gym_exercise', name: 'Gym Exercise', icon: '🏋️', color: '#E57373', parent: 'workout' },
     swimming: { id: 'swimming', name: 'Swimming', icon: '🏊', color: '#4FC3F7', parent: 'workout' },
     sports: { id: 'sports', name: 'Sports', icon: '⚽', color: '#81C784', parent: 'workout' }
 };
 
 const MAIN_ACTIVITIES = ['study', 'work', 'workout'];
-const WORKOUT_ACTIVITIES = ['running', 'gym', 'swimming', 'sports'];
+const WORKOUT_ACTIVITIES = ['outdoor_running', 'gym_exercise', 'swimming', 'sports'];
 
 // Storage operations
 const Storage = {
