@@ -1,16 +1,16 @@
-const CACHE_NAME = 'time-tracker-v1';
+const CACHE_NAME = 'time-tracker-v2';
 const ASSETS_TO_CACHE = [
-    '/',
-    '/index.html',
-    '/css/styles.css',
-    '/js/storage.js',
-    '/js/timer.js',
-    '/js/ui.js',
-    '/js/analytics.js',
-    '/js/app.js',
-    '/manifest.json',
-    '/icons/icon-192.png',
-    '/icons/icon-512.png'
+    './',
+    './index.html',
+    './css/styles.css',
+    './js/storage.js',
+    './js/timer.js',
+    './js/ui.js',
+    './js/analytics.js',
+    './js/app.js',
+    './manifest.json',
+    './icons/icon-192.png',
+    './icons/icon-512.png'
 ];
 
 // Install event - cache assets
