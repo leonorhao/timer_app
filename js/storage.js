@@ -7,6 +7,12 @@ db.version(1).stores({
     sessions: '++id, activityId, parentCategory, startTime, endTime, status'
 });
 
+db.version(2).stores({
+    sessions: '++id, activityId, parentCategory, startTime, endTime, status',
+    goals: 'activityId',
+    streaks: 'id'
+});
+
 // Activity definitions
 const ACTIVITIES = {
     study: { id: 'study', name: 'Study', icon: '📚', color: '#4A90D9', parent: null },
@@ -183,5 +189,90 @@ const Storage = {
     // Get workout activities
     getWorkoutActivities() {
         return WORKOUT_ACTIVITIES;
+    },
+
+    // Goals management
+    async getGoals() {
+        const goals = await db.goals.toArray();
+        const goalsMap = {};
+        goals.forEach(g => goalsMap[g.activityId] = g.minutes);
+        return goalsMap;
+    },
+
+    async setGoal(activityId, minutes) {
+        await db.goals.put({ activityId, minutes });
+    },
+
+    async saveGoals(goalsMap) {
+        for (const [activityId, minutes] of Object.entries(goalsMap)) {
+            if (minutes > 0) {
+                await db.goals.put({ activityId, minutes: parseInt(minutes) });
+            } else {
+                await db.goals.delete(activityId);
+            }
+        }
+    },
+
+    // Streak calculation
+    async calculateStreak() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let streak = 0;
+        let checkDate = new Date(today);
+
+        // Check backwards from today
+        while (true) {
+            const dayStart = new Date(checkDate);
+            const dayEnd = new Date(checkDate);
+            dayEnd.setDate(dayEnd.getDate() + 1);
+
+            const sessions = await db.sessions
+                .where('endTime')
+                .between(dayStart.getTime(), dayEnd.getTime())
+                .and(s => s.status === 'completed')
+                .count();
+
+            if (sessions > 0) {
+                streak++;
+                checkDate.setDate(checkDate.getDate() - 1);
+            } else {
+                // If it's today and no sessions yet, check yesterday
+                if (checkDate.getTime() === today.getTime()) {
+                    checkDate.setDate(checkDate.getDate() - 1);
+                    continue;
+                }
+                break;
+            }
+        }
+
+        return streak;
+    },
+
+    // Get last completed activity (for quick resume)
+    async getLastActivity() {
+        const sessions = await db.sessions
+            .where('status')
+            .equals('completed')
+            .reverse()
+            .sortBy('endTime');
+
+        if (sessions.length > 0) {
+            return sessions[0].activityId;
+        }
+        return null;
+    },
+
+    // Get today's totals by activity
+    async getTodayTotals() {
+        const sessions = await this.getTodaySessions();
+        const totals = {};
+
+        sessions.forEach(session => {
+            const actId = session.activityId;
+            totals[actId] = (totals[actId] || 0) + session.duration;
+        });
+
+        return totals;
     }
 };

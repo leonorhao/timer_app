@@ -527,6 +527,194 @@ html, body {
     opacity: 0.5;
 }
 
+/* Quick Resume */
+.quick-resume-container {
+    margin-bottom: 16px;
+}
+
+.quick-resume-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--success), #219a52);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+    transition: transform 0.15s ease;
+}
+
+.quick-resume-btn:active {
+    transform: scale(0.98);
+}
+
+.quick-resume-icon {
+    font-size: 1.25rem;
+}
+
+/* Daily Summary */
+.daily-summary {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.summary-title {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.summary-total {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.summary-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.progress-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.progress-icon {
+    font-size: 1.25rem;
+    width: 28px;
+    text-align: center;
+}
+
+.progress-bar-container {
+    flex: 1;
+    height: 8px;
+    background: var(--background);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    min-width: 45px;
+    text-align: right;
+}
+
+.progress-goal {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+}
+
+/* Streak Badge */
+.streak-badge {
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Goals Button */
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.goals-btn {
+    padding: 6px 12px;
+    background: var(--primary-light);
+    color: var(--primary);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.goals-btn:active {
+    opacity: 0.8;
+}
+
+/* Goals List */
+.goals-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.goal-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.goal-icon {
+    font-size: 1.5rem;
+}
+
+.goal-info {
+    flex: 1;
+}
+
+.goal-name {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.goal-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.goal-input {
+    width: 60px;
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.goal-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.goal-unit {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
 /* Responsive */
 @media (min-width: 480px) {
     #app {

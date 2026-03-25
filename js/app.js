@@ -100,13 +100,46 @@ const App = {
                 UI.hideNotesModal();
             }
         });
+
+        // Quick resume button
+        document.getElementById('quick-resume-btn').addEventListener('click', async () => {
+            const activityId = UI.getLastActivityId();
+            if (activityId) {
+                await this.startActivity(activityId);
+            }
+        });
+
+        // Goals button
+        document.getElementById('goals-btn').addEventListener('click', () => {
+            UI.showGoalsModal();
+        });
+
+        // Close goals modal
+        document.getElementById('close-goals').addEventListener('click', () => {
+            UI.hideGoalsModal();
+        });
+
+        // Save goals
+        document.getElementById('save-goals').addEventListener('click', async () => {
+            const goals = UI.getGoalsFromModal();
+            await Storage.saveGoals(goals);
+            UI.hideGoalsModal();
+            await UI.renderDailySummary();
+        });
+
+        // Close goals modal on backdrop click
+        document.getElementById('goals-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'goals-modal') {
+                UI.hideGoalsModal();
+            }
+        });
     },
 
     // Start a new activity timer
     async startActivity(activityId) {
         const session = await Storage.createSession(activityId);
         TimerManager.startTracking(session.id);
-        await UI.renderActiveTimers();
+        await UI.refreshAll();
     },
 
     // Pause a timer
@@ -139,12 +172,12 @@ const App = {
                 const notes = document.getElementById('notes-input').value;
                 await Storage.completeSession(sessionId, notes);
                 UI.hideNotesModal();
-                await UI.renderActiveTimers();
+                await UI.refreshAll();
                 saveBtn.onclick = originalHandler;
             };
         } else {
             await Storage.completeSession(sessionId);
-            await UI.renderActiveTimers();
+            await UI.refreshAll();
         }
     }
 };

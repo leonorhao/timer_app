@@ -25,7 +25,32 @@
         <main class="main-content">
             <!-- Timer Screen -->
             <section id="timer-screen" class="screen active">
-                <div class="section-title">Start Activity</div>
+                <!-- Quick Resume -->
+                <div id="quick-resume-container" class="quick-resume-container" style="display: none;">
+                    <button id="quick-resume-btn" class="quick-resume-btn">
+                        <span class="quick-resume-icon">▶️</span>
+                        <span class="quick-resume-text">Resume <span id="quick-resume-activity"></span></span>
+                    </button>
+                </div>
+
+                <!-- Daily Summary -->
+                <div class="daily-summary" id="daily-summary">
+                    <div class="summary-header">
+                        <span class="summary-title">Today's Progress</span>
+                        <span class="summary-total" id="daily-total">0h 0m</span>
+                    </div>
+                    <div class="summary-bars" id="summary-bars">
+                        <!-- Progress bars rendered by JS -->
+                    </div>
+                    <div class="streak-badge" id="streak-badge" style="display: none;">
+                        🔥 <span id="streak-count">0</span> day streak!
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    Start Activity
+                    <button class="goals-btn" id="goals-btn">🎯 Goals</button>
+                </div>
 
                 <div class="activity-grid" id="activity-buttons">
                     <!-- Activity buttons rendered by JS -->
@@ -103,6 +128,20 @@
                 <div class="workout-options" id="workout-options">
                     <!-- Workout options rendered by JS -->
                 </div>
+            </div>
+        </div>
+
+        <!-- Goals Modal -->
+        <div class="modal" id="goals-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Daily Goals</h3>
+                    <button class="modal-close" id="close-goals">&times;</button>
+                </div>
+                <div class="goals-list" id="goals-list">
+                    <!-- Goals rendered by JS -->
+                </div>
+                <button class="btn-primary" id="save-goals">Save Goals</button>
             </div>
         </div>
     </div>
