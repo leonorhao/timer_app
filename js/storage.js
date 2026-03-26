@@ -29,7 +29,7 @@ const WORKOUT_ACTIVITIES = ['outdoor_running', 'gym_exercise', 'swimming', 'spor
 // One-time migration to fix sessions that were stopped while paused
 // (duration was incorrectly saved as pausedDuration instead of actual work time)
 async function migratePausedSessionDurations() {
-    const migrationKey = 'migration_fix_paused_durations';
+    const migrationKey = 'migration_fix_paused_durations_v2';
     if (localStorage.getItem(migrationKey)) return;
 
     const sessions = await db.sessions
@@ -38,18 +38,23 @@ async function migratePausedSessionDurations() {
         .toArray();
 
     for (const session of sessions) {
-        // Identify broken sessions: duration roughly equals pausedDuration
-        // and actual work time would be significantly different
-        if (session.pausedDuration > 0 && session.startTime && session.pausedAt) {
-            const correctDuration = (session.pausedAt - session.startTime) - session.pausedDuration;
-            if (correctDuration > 0 && session.duration !== correctDuration) {
+        if (!session.startTime || !session.endTime) continue;
+
+        const totalElapsed = session.endTime - session.startTime;
+        const pausedTime = session.pausedDuration || 0;
+
+        // Detect broken sessions: duration is tiny (< 1 min) but total
+        // elapsed time was much longer, meaning the wrong value was saved
+        if (session.duration < 60000 && totalElapsed > 60000 && pausedTime > 0) {
+            const correctDuration = totalElapsed - pausedTime;
+            if (correctDuration > 0) {
                 await db.sessions.update(session.id, { duration: correctDuration });
             }
         }
     }
 
     localStorage.setItem(migrationKey, Date.now().toString());
-    console.log('Migration: fixed paused session durations');
+    console.log('Migration v2: fixed paused session durations');
 }
 
 // Storage operations
