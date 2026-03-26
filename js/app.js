@@ -140,6 +140,12 @@ const App = {
 
     // Start a new activity timer
     async startActivity(activityId) {
+        // Prevent duplicate: only one timer per activity at a time
+        const activeSessions = await Storage.getActiveSessions();
+        if (activeSessions.some(s => s.activityId === activityId)) {
+            return;
+        }
+
         const session = await Storage.createSession(activityId);
         TimerManager.startTracking(session.id);
         await UI.refreshAll();
