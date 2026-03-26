@@ -51,7 +51,7 @@ const TimerManager = {
         }
 
         if (session.status === 'paused') {
-            return session.pausedDuration + (session.pausedAt - session.startTime) - session.pausedDuration;
+            return (session.pausedAt - session.startTime) - session.pausedDuration;
         }
 
         // Active session

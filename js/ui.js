@@ -179,7 +179,7 @@ const UI = {
         // Group sessions by date
         const grouped = {};
         sessions.forEach(session => {
-            const dateKey = TimerManager.formatDate(session.endTime);
+            const dateKey = TimerManager.formatDate(session.startTime);
             if (!grouped[dateKey]) {
                 grouped[dateKey] = [];
             }

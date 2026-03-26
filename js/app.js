@@ -6,6 +6,9 @@ const App = {
         // Register service worker
         this.registerServiceWorker();
 
+        // Run one-time migration to fix paused session durations
+        await migratePausedSessionDurations();
+
         // Initialize UI
         UI.init();
 

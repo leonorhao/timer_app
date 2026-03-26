@@ -26,6 +26,32 @@ const ACTIVITIES = {
 const MAIN_ACTIVITIES = ['study', 'work', 'workout'];
 const WORKOUT_ACTIVITIES = ['outdoor_running', 'gym_exercise', 'swimming', 'sports'];
 
+// One-time migration to fix sessions that were stopped while paused
+// (duration was incorrectly saved as pausedDuration instead of actual work time)
+async function migratePausedSessionDurations() {
+    const migrationKey = 'migration_fix_paused_durations';
+    if (localStorage.getItem(migrationKey)) return;
+
+    const sessions = await db.sessions
+        .where('status')
+        .equals('completed')
+        .toArray();
+
+    for (const session of sessions) {
+        // Identify broken sessions: duration roughly equals pausedDuration
+        // and actual work time would be significantly different
+        if (session.pausedDuration > 0 && session.startTime && session.pausedAt) {
+            const correctDuration = (session.pausedAt - session.startTime) - session.pausedDuration;
+            if (correctDuration > 0 && session.duration !== correctDuration) {
+                await db.sessions.update(session.id, { duration: correctDuration });
+            }
+        }
+    }
+
+    localStorage.setItem(migrationKey, Date.now().toString());
+    console.log('Migration: fixed paused session durations');
+}
+
 // Storage operations
 const Storage = {
     // Create a new session
@@ -77,7 +103,7 @@ const Storage = {
     // Get sessions by date range
     async getSessionsByDateRange(startDate, endDate) {
         return await db.sessions
-            .where('endTime')
+            .where('startTime')
             .between(startDate.getTime(), endDate.getTime())
             .and(session => session.status === 'completed')
             .toArray();
@@ -121,7 +147,7 @@ const Storage = {
         let duration;
 
         if (session.status === 'paused') {
-            duration = session.pausedDuration;
+            duration = (session.pausedAt - session.startTime) - session.pausedDuration;
         } else {
             duration = endTime - session.startTime - session.pausedDuration;
         }

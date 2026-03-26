@@ -188,7 +188,7 @@ const Analytics = {
 
         // Populate data
         sessions.forEach(session => {
-            const date = new Date(session.endTime);
+            const date = new Date(session.startTime);
             const dayKey = date.toDateString();
             if (dayData[dayKey]) {
                 dayData[dayKey][session.activityId] =
@@ -266,7 +266,7 @@ const Analytics = {
 
         // Sum up daily totals
         sessions.forEach(session => {
-            const date = new Date(session.endTime);
+            const date = new Date(session.startTime);
             const day = date.getDate();
             dailyTotals[day] = (dailyTotals[day] || 0) + session.duration;
         });
