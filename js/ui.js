@@ -338,31 +338,47 @@ const UI = {
         Object.values(totals).forEach(ms => totalMs += ms);
         this.elements.dailyTotal.textContent = TimerManager.formatDuration(totalMs);
 
-        // Build progress bars
-        let html = '';
-        const allActivityIds = [...new Set([...Object.keys(totals), ...Object.keys(goals)])];
+        // Aggregate workout sub-activities into a single "workout" total
+        const groupedTotals = {};
+        Object.entries(totals).forEach(([actId, ms]) => {
+            const activity = activities[actId];
+            if (activity && activity.parent === 'workout') {
+                groupedTotals['workout'] = (groupedTotals['workout'] || 0) + ms;
+            } else {
+                groupedTotals[actId] = (groupedTotals[actId] || 0) + ms;
+            }
+        });
 
-        if (allActivityIds.length === 0) {
+        // Build progress bars for main categories
+        const mainCategories = [
+            { id: 'study', name: 'Study', icon: '📚', color: '#4A90D9' },
+            { id: 'work', name: 'Work', icon: '💼', color: '#7B68EE' },
+            { id: 'workout', name: 'Workout', icon: '💪', color: '#FF8A65' }
+        ];
+
+        let html = '';
+        const hasData = mainCategories.some(cat => (groupedTotals[cat.id] || 0) > 0 || goals[cat.id]);
+
+        if (!hasData) {
             html = '<div class="empty-state" style="padding: 10px 0; font-size: 0.85rem;">Start tracking to see your progress!</div>';
         } else {
-            allActivityIds.forEach(actId => {
-                const activity = activities[actId];
-                if (!activity) return;
-
-                const timeMs = totals[actId] || 0;
-                const goalMinutes = goals[actId] || 60; // Default 1 hour if no goal
+            mainCategories.forEach(cat => {
+                const timeMs = groupedTotals[cat.id] || 0;
+                const goalMinutes = goals[cat.id] || 60;
                 const timeMinutes = timeMs / 60000;
                 const percentage = Math.min((timeMinutes / goalMinutes) * 100, 100);
 
-                html += `
-                    <div class="progress-row">
-                        <span class="progress-icon">${activity.icon}</span>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: ${percentage}%; background: ${activity.color};"></div>
+                if (timeMs > 0 || goals[cat.id]) {
+                    html += `
+                        <div class="progress-row">
+                            <span class="progress-icon">${cat.icon}</span>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: ${percentage}%; background: ${cat.color};"></div>
+                            </div>
+                            <span class="progress-time">${TimerManager.formatDuration(timeMs)}</span>
                         </div>
-                        <span class="progress-time">${TimerManager.formatDuration(timeMs)}</span>
-                    </div>
-                `;
+                    `;
+                }
             });
         }
 
@@ -386,12 +402,16 @@ const UI = {
         const goals = await Storage.getGoals();
         const activities = Storage.getAllActivities();
 
-        // Show goals for main categories (study, work) and workout subcategories
-        const goalActivities = ['study', 'work', 'outdoor_running', 'gym_exercise', 'swimming', 'sports'];
+        // Show goals for main categories only
+        const goalActivities = [
+            { id: 'study', name: 'Study', icon: '📚' },
+            { id: 'work', name: 'Work', icon: '💼' },
+            { id: 'workout', name: 'Workout', icon: '💪' }
+        ];
 
         let html = '';
-        goalActivities.forEach(actId => {
-            const activity = activities[actId];
+        goalActivities.forEach(activity => {
+            const actId = activity.id;
             const currentGoal = goals[actId] || '';
 
             html += `
@@ -420,7 +440,7 @@ const UI = {
 
     // Get goals from modal inputs
     getGoalsFromModal() {
-        const goalActivities = ['study', 'work', 'outdoor_running', 'gym_exercise', 'swimming', 'sports'];
+        const goalActivities = ['study', 'work', 'workout'];
         const goals = {};
 
         goalActivities.forEach(actId => {
