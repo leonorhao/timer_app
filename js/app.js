@@ -220,26 +220,8 @@ const App = {
     // Stop a timer
     async stopTimer(sessionId) {
         TimerManager.stopTracking(sessionId);
-        const session = await Storage.getSession(sessionId);
-
-        // If no notes yet, show notes modal before completing
-        if (!session.notes) {
-            UI.showNotesModal(sessionId);
-            // Override save notes to complete the session
-            const saveBtn = document.getElementById('save-notes');
-            const originalHandler = saveBtn.onclick;
-
-            saveBtn.onclick = async () => {
-                const notes = document.getElementById('notes-input').value;
-                await Storage.completeSession(sessionId, notes);
-                UI.hideNotesModal();
-                await UI.refreshAll();
-                saveBtn.onclick = originalHandler;
-            };
-        } else {
-            await Storage.completeSession(sessionId);
-            await UI.refreshAll();
-        }
+        await Storage.completeSession(sessionId);
+        await UI.refreshAll();
     }
 };
 
