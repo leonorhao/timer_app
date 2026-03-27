@@ -197,14 +197,17 @@ const UI = {
                 const endTime = TimerManager.formatTimeOfDay(session.endTime);
 
                 html += `
-                    <div class="history-item">
+                    <div class="history-item" data-session-id="${session.id}">
                         <span class="history-icon">${activity.icon}</span>
                         <div class="history-details">
                             <div class="history-activity">${activity.name}</div>
                             <div class="history-time">${startTime} - ${endTime}</div>
                             ${session.notes ? `<div class="history-notes">${session.notes}</div>` : ''}
                         </div>
-                        <div class="history-duration">${duration}</div>
+                        <div class="history-right">
+                            <div class="history-duration">${duration}</div>
+                            <button class="history-edit-btn" data-session-id="${session.id}">Edit</button>
+                        </div>
                     </div>
                 `;
             });
@@ -451,6 +454,28 @@ const UI = {
         });
 
         return goals;
+    },
+
+    // Show edit history modal
+    async showEditHistoryModal(sessionId) {
+        this.editingSessionId = sessionId;
+        const session = await Storage.getSession(sessionId);
+        if (!session) return;
+
+        document.getElementById('edit-history-notes').value = session.notes || '';
+        document.getElementById('edit-history-duration').value = Math.round(session.duration / 60000);
+        document.getElementById('edit-history-modal').classList.add('active');
+    },
+
+    // Hide edit history modal
+    hideEditHistoryModal() {
+        document.getElementById('edit-history-modal').classList.remove('active');
+        this.editingSessionId = null;
+    },
+
+    // Get editing session ID
+    getEditingSessionId() {
+        return this.editingSessionId;
     },
 
     // Refresh all dynamic content

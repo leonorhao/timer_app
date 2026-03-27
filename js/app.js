@@ -136,6 +136,58 @@ const App = {
                 UI.hideGoalsModal();
             }
         });
+
+        // History edit button clicks
+        document.getElementById('history-list').addEventListener('click', (e) => {
+            const btn = e.target.closest('.history-edit-btn');
+            if (!btn) return;
+            const sessionId = parseInt(btn.dataset.sessionId);
+            UI.showEditHistoryModal(sessionId);
+        });
+
+        // Close edit history modal
+        document.getElementById('close-edit-history').addEventListener('click', () => {
+            UI.hideEditHistoryModal();
+        });
+
+        document.getElementById('edit-history-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'edit-history-modal') {
+                UI.hideEditHistoryModal();
+            }
+        });
+
+        // Save edit history
+        document.getElementById('save-edit-history').addEventListener('click', async () => {
+            const sessionId = UI.getEditingSessionId();
+            if (!sessionId) return;
+
+            const notes = document.getElementById('edit-history-notes').value;
+            const durationMinutes = parseInt(document.getElementById('edit-history-duration').value);
+
+            if (durationMinutes > 0) {
+                await Storage.updateSession(sessionId, {
+                    notes: notes,
+                    duration: durationMinutes * 60000
+                });
+            }
+
+            UI.hideEditHistoryModal();
+            await UI.renderHistory();
+            await UI.renderDailySummary();
+        });
+
+        // Delete history session
+        document.getElementById('delete-history-session').addEventListener('click', async () => {
+            const sessionId = UI.getEditingSessionId();
+            if (!sessionId) return;
+
+            if (confirm('Delete this session?')) {
+                await Storage.deleteSession(sessionId);
+                UI.hideEditHistoryModal();
+                await UI.renderHistory();
+                await UI.renderDailySummary();
+            }
+        });
     },
 
     // Start a new activity timer
