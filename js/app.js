@@ -104,14 +104,6 @@ const App = {
             }
         });
 
-        // Quick resume button
-        document.getElementById('quick-resume-btn').addEventListener('click', async () => {
-            const activityId = UI.getLastActivityId();
-            if (activityId) {
-                await this.startActivity(activityId);
-            }
-        });
-
         // Goals button
         document.getElementById('goals-btn').addEventListener('click', () => {
             UI.showGoalsModal();

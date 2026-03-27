@@ -21,9 +21,6 @@ const UI = {
             workoutOptions: document.getElementById('workout-options'),
             goalsModal: document.getElementById('goals-modal'),
             goalsList: document.getElementById('goals-list'),
-            quickResumeContainer: document.getElementById('quick-resume-container'),
-            quickResumeBtn: document.getElementById('quick-resume-btn'),
-            quickResumeActivity: document.getElementById('quick-resume-activity'),
             dailySummary: document.getElementById('daily-summary'),
             summaryBars: document.getElementById('summary-bars'),
             dailyTotal: document.getElementById('daily-total'),
@@ -39,7 +36,6 @@ const UI = {
         this.setupNavigation();
         this.setupModals();
         this.renderDailySummary();
-        this.renderQuickResume();
         this.renderStreak();
     },
 
@@ -307,29 +303,6 @@ const UI = {
         return this.currentNotesSessionId;
     },
 
-    // Render quick resume button
-    async renderQuickResume() {
-        const lastActivityId = await Storage.getLastActivity();
-        const activeSessions = await Storage.getActiveSessions();
-
-        // Don't show if no last activity or if that activity is already running
-        if (!lastActivityId || activeSessions.some(s => s.activityId === lastActivityId)) {
-            this.elements.quickResumeContainer.style.display = 'none';
-            return;
-        }
-
-        this.lastActivityId = lastActivityId;
-        const activity = Storage.getActivity(lastActivityId);
-
-        this.elements.quickResumeActivity.textContent = activity.name;
-        this.elements.quickResumeContainer.style.display = 'block';
-    },
-
-    // Get last activity ID for quick resume
-    getLastActivityId() {
-        return this.lastActivityId;
-    },
-
     // Render daily summary
     async renderDailySummary() {
         const totals = await Storage.getTodayTotals();
@@ -482,7 +455,6 @@ const UI = {
     async refreshAll() {
         await this.renderActiveTimers();
         await this.renderDailySummary();
-        await this.renderQuickResume();
         await this.renderStreak();
     }
 };
