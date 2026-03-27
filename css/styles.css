@@ -577,6 +577,33 @@ html, body {
     box-shadow: 0 2px 8px var(--shadow);
 }
 
+.calendar-view-toggle {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+    background: var(--background);
+    border-radius: 8px;
+    padding: 3px;
+}
+
+.cal-view-btn {
+    flex: 1;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.cal-view-btn.active {
+    background: var(--primary);
+    color: white;
+}
+
 .calendar-header {
     display: flex;
     justify-content: space-between;

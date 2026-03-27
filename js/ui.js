@@ -181,6 +181,7 @@ const UI = {
     // Calendar state
     calendarDate: null,
     selectedDate: null,
+    calendarView: 'week',
 
     // Render calendar
     async renderCalendar() {
@@ -188,61 +189,106 @@ const UI = {
             this.calendarDate = new Date();
         }
 
+        if (this.calendarView === 'week') {
+            await this.renderWeekCalendar();
+        } else {
+            await this.renderMonthCalendar();
+        }
+    },
+
+    // Build activity dots map for a date range
+    async getActivityDotsMap(startDate, endDate) {
+        const sessions = await Storage.getSessionsByDateRange(startDate, endDate);
+        const activities = Storage.getAllActivities();
+        const map = {};
+
+        sessions.forEach(s => {
+            const dateKey = new Date(s.startTime).toDateString();
+            if (!map[dateKey]) map[dateKey] = new Set();
+            const color = activities[s.activityId]?.color ||
+                (activities[s.activityId]?.parent === 'workout' ? '#FF8A65' : '#999');
+            map[dateKey].add(color);
+        });
+
+        return map;
+    },
+
+    // Render a single day cell
+    renderDayCell(date, dayActivities, today) {
+        const dateKey = date.toDateString();
+        const isToday = date.toDateString() === today.toDateString();
+        const isSelected = this.selectedDate &&
+            date.toDateString() === this.selectedDate.toDateString();
+
+        let dotsHtml = '';
+        if (dayActivities[dateKey]) {
+            dotsHtml = '<div class="cal-dots">';
+            dayActivities[dateKey].forEach(color => {
+                dotsHtml += `<span style="background:${color}"></span>`;
+            });
+            dotsHtml += '</div>';
+        }
+
+        return `<div class="cal-day${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}" data-day="${date.getDate()}" data-month="${date.getMonth()}" data-year="${date.getFullYear()}">
+            ${date.getDate()}${dotsHtml}
+        </div>`;
+    },
+
+    // Week view
+    async renderWeekCalendar() {
+        const ref = new Date(this.calendarDate);
+        const dayOfWeek = ref.getDay();
+        const weekStart = new Date(ref);
+        weekStart.setDate(ref.getDate() - dayOfWeek);
+        weekStart.setHours(0, 0, 0, 0);
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 7);
+
+        // Label
+        const startLabel = weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const endDate = new Date(weekEnd);
+        endDate.setDate(endDate.getDate() - 1);
+        const endLabel = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        document.getElementById('cal-month-label').textContent = `${startLabel} - ${endLabel}`;
+
+        const dayActivities = await this.getActivityDotsMap(weekStart, weekEnd);
+        const today = new Date();
+
+        let html = '';
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(weekStart);
+            d.setDate(weekStart.getDate() + i);
+            html += this.renderDayCell(d, dayActivities, today);
+        }
+
+        document.getElementById('cal-grid').innerHTML = html;
+    },
+
+    // Month view
+    async renderMonthCalendar() {
         const year = this.calendarDate.getFullYear();
         const month = this.calendarDate.getMonth();
 
-        // Update month label
         document.getElementById('cal-month-label').textContent =
             new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
-        // Get sessions for this month
         const startOfMonth = new Date(year, month, 1);
         const endOfMonth = new Date(year, month + 1, 1);
-        const sessions = await Storage.getSessionsByDateRange(startOfMonth, endOfMonth);
+        const dayActivities = await this.getActivityDotsMap(startOfMonth, endOfMonth);
 
-        // Build map of day -> activity colors
-        const dayActivities = {};
-        const activities = Storage.getAllActivities();
-        sessions.forEach(s => {
-            const day = new Date(s.startTime).getDate();
-            if (!dayActivities[day]) dayActivities[day] = new Set();
-            const color = activities[s.activityId]?.color ||
-                (activities[s.activityId]?.parent === 'workout' ? '#FF8A65' : '#999');
-            dayActivities[day].add(color);
-        });
-
-        // Build calendar grid
-        const firstDay = new Date(year, month, 1).getDay();
+        const firstDay = startOfMonth.getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const today = new Date();
 
         let html = '';
 
-        // Empty cells before first day
         for (let i = 0; i < firstDay; i++) {
             html += '<div class="cal-day empty"></div>';
         }
 
-        // Day cells
         for (let d = 1; d <= daysInMonth; d++) {
-            const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-            const isSelected = this.selectedDate &&
-                d === this.selectedDate.getDate() &&
-                month === this.selectedDate.getMonth() &&
-                year === this.selectedDate.getFullYear();
-
-            let dotsHtml = '';
-            if (dayActivities[d]) {
-                dotsHtml = '<div class="cal-dots">';
-                dayActivities[d].forEach(color => {
-                    dotsHtml += `<span style="background:${color}"></span>`;
-                });
-                dotsHtml += '</div>';
-            }
-
-            html += `<div class="cal-day${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}" data-day="${d}">
-                ${d}${dotsHtml}
-            </div>`;
+            const date = new Date(year, month, d);
+            html += this.renderDayCell(date, dayActivities, today);
         }
 
         document.getElementById('cal-grid').innerHTML = html;

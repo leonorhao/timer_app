@@ -163,14 +163,33 @@ const App = {
             UI.renderActivityButtons();
         });
 
+        // Calendar view toggle
+        document.querySelectorAll('.cal-view-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.cal-view-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                UI.calendarView = btn.dataset.view;
+                UI.calendarDate = new Date();
+                UI.renderHistory();
+            });
+        });
+
         // Calendar navigation
         document.getElementById('cal-prev').addEventListener('click', () => {
-            UI.calendarDate.setMonth(UI.calendarDate.getMonth() - 1);
+            if (UI.calendarView === 'week') {
+                UI.calendarDate.setDate(UI.calendarDate.getDate() - 7);
+            } else {
+                UI.calendarDate.setMonth(UI.calendarDate.getMonth() - 1);
+            }
             UI.renderHistory();
         });
 
         document.getElementById('cal-next').addEventListener('click', () => {
-            UI.calendarDate.setMonth(UI.calendarDate.getMonth() + 1);
+            if (UI.calendarView === 'week') {
+                UI.calendarDate.setDate(UI.calendarDate.getDate() + 7);
+            } else {
+                UI.calendarDate.setMonth(UI.calendarDate.getMonth() + 1);
+            }
             UI.renderHistory();
         });
 
@@ -179,8 +198,8 @@ const App = {
             const dayEl = e.target.closest('.cal-day');
             if (!dayEl || dayEl.classList.contains('empty')) return;
             const day = parseInt(dayEl.dataset.day);
-            const year = UI.calendarDate.getFullYear();
-            const month = UI.calendarDate.getMonth();
+            const month = parseInt(dayEl.dataset.month);
+            const year = parseInt(dayEl.dataset.year);
             UI.selectedDate = new Date(year, month, day);
             UI.renderHistory();
         });
