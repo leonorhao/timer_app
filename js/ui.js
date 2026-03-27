@@ -244,7 +244,7 @@ const UI = {
         if (screenId === 'history-screen') {
             this.renderHistory();
         } else if (screenId === 'analytics-screen') {
-            Analytics.render('today');
+            Analytics.render(Analytics.currentPeriod || 'today');
         } else if (screenId === 'timer-screen') {
             this.renderActiveTimers();
         }
