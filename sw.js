@@ -1,4 +1,4 @@
-const CACHE_NAME = 'time-tracker-v15';
+const CACHE_NAME = 'still-me-v1';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

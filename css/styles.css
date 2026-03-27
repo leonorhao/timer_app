@@ -58,8 +58,19 @@ html, body {
 
 .header h1 {
     font-size: 1.5rem;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-primary);
+}
+
+.header-accent {
+    color: #D4A0C0;
+}
+
+.header-tagline {
+    font-size: 0.75rem;
+    color: #B0B8C1;
+    margin-top: 2px;
+    font-style: italic;
 }
 
 /* Main Content */

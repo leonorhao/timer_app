@@ -1,7 +1,7 @@
 {
-    "name": "Activity Time Tracker",
-    "short_name": "Time Tracker",
-    "description": "Track your study, work, and workout activities",
+    "name": "Still Me — Tiny moments, still yours",
+    "short_name": "Still Me",
+    "description": "Reclaim your time, one tiny moment at a time",
     "start_url": ".",
     "scope": ".",
     "display": "standalone",
