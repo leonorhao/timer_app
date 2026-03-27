@@ -9,6 +9,9 @@ const App = {
         // Run one-time migration to fix paused session durations
         await migratePausedSessionDurations();
 
+        // Load custom activities
+        await loadCustomActivities();
+
         // Initialize UI
         UI.init();
 
@@ -18,9 +21,13 @@ const App = {
         // Setup event listeners
         this.setupEventListeners();
 
+        // Request notification permission
+        this.requestNotificationPermission();
+
         // Register timer update callback
         TimerManager.onUpdate(() => {
             UI.updateTimerDisplays();
+            this.checkRunningTimerNotification();
         });
 
         // Load active timers
@@ -52,7 +59,9 @@ const App = {
             if (!btn) return;
 
             const activity = btn.dataset.activity;
-            if (activity === 'workout') {
+            if (activity === '__add__') {
+                document.getElementById('add-activity-modal').classList.add('active');
+            } else if (activity === 'workout') {
                 UI.showWorkoutModal();
             } else {
                 await this.startActivity(activity);
@@ -127,6 +136,59 @@ const App = {
             if (e.target.id === 'goals-modal') {
                 UI.hideGoalsModal();
             }
+        });
+
+        // Add custom activity
+        document.getElementById('close-add-activity').addEventListener('click', () => {
+            document.getElementById('add-activity-modal').classList.remove('active');
+        });
+
+        document.getElementById('add-activity-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'add-activity-modal') {
+                document.getElementById('add-activity-modal').classList.remove('active');
+            }
+        });
+
+        document.getElementById('save-new-activity').addEventListener('click', async () => {
+            const name = document.getElementById('new-activity-name').value.trim();
+            const icon = document.getElementById('new-activity-icon').value.trim();
+            const color = document.getElementById('new-activity-color').value;
+
+            if (!name || !icon) return;
+
+            await Storage.addCustomActivity(name, icon, color);
+            document.getElementById('add-activity-modal').classList.remove('active');
+            document.getElementById('new-activity-name').value = '';
+            document.getElementById('new-activity-icon').value = '';
+            UI.renderActivityButtons();
+        });
+
+        // Calendar navigation
+        document.getElementById('cal-prev').addEventListener('click', () => {
+            UI.calendarDate.setMonth(UI.calendarDate.getMonth() - 1);
+            UI.renderHistory();
+        });
+
+        document.getElementById('cal-next').addEventListener('click', () => {
+            UI.calendarDate.setMonth(UI.calendarDate.getMonth() + 1);
+            UI.renderHistory();
+        });
+
+        // Calendar day click
+        document.getElementById('cal-grid').addEventListener('click', (e) => {
+            const dayEl = e.target.closest('.cal-day');
+            if (!dayEl || dayEl.classList.contains('empty')) return;
+            const day = parseInt(dayEl.dataset.day);
+            const year = UI.calendarDate.getFullYear();
+            const month = UI.calendarDate.getMonth();
+            UI.selectedDate = new Date(year, month, day);
+            UI.renderHistory();
+        });
+
+        // Show all history
+        document.getElementById('show-all-history').addEventListener('click', () => {
+            UI.selectedDate = null;
+            UI.renderHistory();
         });
 
         // History edit button clicks
@@ -213,7 +275,39 @@ const App = {
     async stopTimer(sessionId) {
         TimerManager.stopTracking(sessionId);
         await Storage.completeSession(sessionId);
+        this.notifiedSessions.delete(sessionId);
         await UI.refreshAll();
+    },
+
+    // Notification support
+    notifiedSessions: new Set(),
+
+    requestNotificationPermission() {
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    },
+
+    async checkRunningTimerNotification() {
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+        const sessions = await Storage.getActiveSessions();
+        const now = Date.now();
+        const TWO_HOURS = 2 * 60 * 60 * 1000;
+
+        sessions.forEach(session => {
+            if (session.status === 'active' && !this.notifiedSessions.has(session.id)) {
+                const elapsed = now - session.startTime - (session.pausedDuration || 0);
+                if (elapsed >= TWO_HOURS) {
+                    const activity = Storage.getActivity(session.activityId);
+                    new Notification('Timer Still Running', {
+                        body: `${activity?.name || 'Activity'} has been running for over 2 hours.`,
+                        icon: 'icons/icon-192.png'
+                    });
+                    this.notifiedSessions.add(session.id);
+                }
+            }
+        });
     }
 };
 

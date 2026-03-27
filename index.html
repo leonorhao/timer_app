@@ -58,7 +58,21 @@
 
             <!-- History Screen -->
             <section id="history-screen" class="screen">
-                <div class="section-title">Session History</div>
+                <div class="calendar-container" id="calendar-container">
+                    <div class="calendar-header">
+                        <button class="calendar-nav" id="cal-prev">&lt;</button>
+                        <span class="calendar-month" id="cal-month-label"></span>
+                        <button class="calendar-nav" id="cal-next">&gt;</button>
+                    </div>
+                    <div class="calendar-weekdays">
+                        <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+                    </div>
+                    <div class="calendar-grid" id="cal-grid"></div>
+                </div>
+                <div class="section-title">
+                    <span id="history-title">Session History</span>
+                    <button class="goals-btn" id="show-all-history" style="display:none;">Show All</button>
+                </div>
                 <div id="history-list" class="history-list">
                     <div class="empty-state">No sessions recorded yet.</div>
                 </div>
@@ -142,6 +156,31 @@
                 </div>
                 <button class="btn-primary" id="save-edit-history">Save Changes</button>
                 <button class="btn-danger" id="delete-history-session">Delete Session</button>
+            </div>
+        </div>
+
+        <!-- Add Activity Modal -->
+        <div class="modal" id="add-activity-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>New Activity</h3>
+                    <button class="modal-close" id="close-add-activity">&times;</button>
+                </div>
+                <div class="edit-history-form">
+                    <div class="edit-field">
+                        <label class="edit-label">Name</label>
+                        <input type="text" id="new-activity-name" class="edit-input" placeholder="e.g. Reading" maxlength="20">
+                    </div>
+                    <div class="edit-field">
+                        <label class="edit-label">Emoji</label>
+                        <input type="text" id="new-activity-icon" class="edit-input" placeholder="e.g. 📖" maxlength="2">
+                    </div>
+                    <div class="edit-field">
+                        <label class="edit-label">Color</label>
+                        <input type="color" id="new-activity-color" class="edit-input" value="#9B59B6">
+                    </div>
+                </div>
+                <button class="btn-primary" id="save-new-activity">Add Activity</button>
             </div>
         </div>
 

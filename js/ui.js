@@ -43,12 +43,12 @@ const UI = {
     renderActivityButtons() {
         const mainActivities = Storage.getMainActivities();
         const activities = Storage.getAllActivities();
+        const customActivities = Storage.getCustomActivities();
 
         let html = '';
 
         mainActivities.forEach(actId => {
             if (actId === 'workout') {
-                // Workout button opens submenu
                 html += `
                     <button class="activity-btn workout" data-activity="workout">
                         <span class="icon">💪</span>
@@ -65,6 +65,24 @@ const UI = {
                 `;
             }
         });
+
+        // Custom activities
+        customActivities.forEach(activity => {
+            html += `
+                <button class="activity-btn custom" data-activity="${activity.id}" style="border-left: 4px solid ${activity.color};">
+                    <span class="icon">${activity.icon}</span>
+                    <span class="label">${activity.name}</span>
+                </button>
+            `;
+        });
+
+        // Add button
+        html += `
+            <button class="activity-btn add-activity" data-activity="__add__">
+                <span class="icon">+</span>
+                <span class="label">Add</span>
+            </button>
+        `;
 
         this.elements.activityButtons.innerHTML = html;
     },
@@ -160,9 +178,98 @@ const UI = {
         });
     },
 
+    // Calendar state
+    calendarDate: null,
+    selectedDate: null,
+
+    // Render calendar
+    async renderCalendar() {
+        if (!this.calendarDate) {
+            this.calendarDate = new Date();
+        }
+
+        const year = this.calendarDate.getFullYear();
+        const month = this.calendarDate.getMonth();
+
+        // Update month label
+        document.getElementById('cal-month-label').textContent =
+            new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+        // Get sessions for this month
+        const startOfMonth = new Date(year, month, 1);
+        const endOfMonth = new Date(year, month + 1, 1);
+        const sessions = await Storage.getSessionsByDateRange(startOfMonth, endOfMonth);
+
+        // Build map of day -> activity colors
+        const dayActivities = {};
+        const activities = Storage.getAllActivities();
+        sessions.forEach(s => {
+            const day = new Date(s.startTime).getDate();
+            if (!dayActivities[day]) dayActivities[day] = new Set();
+            const color = activities[s.activityId]?.color ||
+                (activities[s.activityId]?.parent === 'workout' ? '#FF8A65' : '#999');
+            dayActivities[day].add(color);
+        });
+
+        // Build calendar grid
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+
+        let html = '';
+
+        // Empty cells before first day
+        for (let i = 0; i < firstDay; i++) {
+            html += '<div class="cal-day empty"></div>';
+        }
+
+        // Day cells
+        for (let d = 1; d <= daysInMonth; d++) {
+            const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+            const isSelected = this.selectedDate &&
+                d === this.selectedDate.getDate() &&
+                month === this.selectedDate.getMonth() &&
+                year === this.selectedDate.getFullYear();
+
+            let dotsHtml = '';
+            if (dayActivities[d]) {
+                dotsHtml = '<div class="cal-dots">';
+                dayActivities[d].forEach(color => {
+                    dotsHtml += `<span style="background:${color}"></span>`;
+                });
+                dotsHtml += '</div>';
+            }
+
+            html += `<div class="cal-day${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}" data-day="${d}">
+                ${d}${dotsHtml}
+            </div>`;
+        }
+
+        document.getElementById('cal-grid').innerHTML = html;
+    },
+
     // Render history screen
     async renderHistory() {
-        const sessions = await Storage.getCompletedSessions();
+        await this.renderCalendar();
+
+        let sessions;
+        const showAllBtn = document.getElementById('show-all-history');
+        const titleEl = document.getElementById('history-title');
+
+        if (this.selectedDate) {
+            const dayStart = new Date(this.selectedDate);
+            dayStart.setHours(0, 0, 0, 0);
+            const dayEnd = new Date(dayStart);
+            dayEnd.setDate(dayEnd.getDate() + 1);
+            sessions = await Storage.getSessionsByDateRange(dayStart, dayEnd);
+            titleEl.textContent = TimerManager.formatDate(this.selectedDate.getTime());
+            showAllBtn.style.display = 'block';
+        } else {
+            sessions = await Storage.getCompletedSessions();
+            titleEl.textContent = 'Session History';
+            showAllBtn.style.display = 'none';
+        }
+
         const activities = Storage.getAllActivities();
 
         if (sessions.length === 0) {

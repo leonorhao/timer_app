@@ -13,6 +13,13 @@ db.version(2).stores({
     streaks: 'id'
 });
 
+db.version(3).stores({
+    sessions: '++id, activityId, parentCategory, startTime, endTime, status',
+    goals: 'activityId',
+    streaks: 'id',
+    customActivities: '++id, &activityId'
+});
+
 // Activity definitions
 const ACTIVITIES = {
     study: { id: 'study', name: 'Study', icon: '📚', color: '#4A90D9', parent: null },
@@ -57,11 +64,33 @@ async function migratePausedSessionDurations() {
     console.log('Migration v2: fixed paused session durations');
 }
 
+// Runtime activities (built-in + custom)
+let ALL_ACTIVITIES = { ...ACTIVITIES };
+
+// Load custom activities from DB
+async function loadCustomActivities() {
+    try {
+        const customs = await db.customActivities.toArray();
+        customs.forEach(ca => {
+            ALL_ACTIVITIES[ca.activityId] = {
+                id: ca.activityId,
+                name: ca.name,
+                icon: ca.icon,
+                color: ca.color,
+                parent: null,
+                custom: true
+            };
+        });
+    } catch (e) {
+        console.log('Custom activities not loaded yet');
+    }
+}
+
 // Storage operations
 const Storage = {
     // Create a new session
     async createSession(activityId) {
-        const activity = ACTIVITIES[activityId];
+        const activity = ALL_ACTIVITIES[activityId];
         const session = {
             activityId: activityId,
             parentCategory: activity.parent || activityId,
@@ -204,12 +233,12 @@ const Storage = {
 
     // Get activity info
     getActivity(activityId) {
-        return ACTIVITIES[activityId];
+        return ALL_ACTIVITIES[activityId];
     },
 
     // Get all activities
     getAllActivities() {
-        return ACTIVITIES;
+        return ALL_ACTIVITIES;
     },
 
     // Get main activities
@@ -292,6 +321,23 @@ const Storage = {
             return sessions[0].activityId;
         }
         return null;
+    },
+
+    // Custom activities
+    async addCustomActivity(name, icon, color) {
+        const activityId = 'custom_' + Date.now();
+        await db.customActivities.add({ activityId, name, icon, color });
+        ALL_ACTIVITIES[activityId] = { id: activityId, name, icon, color, parent: null, custom: true };
+        return activityId;
+    },
+
+    async deleteCustomActivity(activityId) {
+        await db.customActivities.where('activityId').equals(activityId).delete();
+        delete ALL_ACTIVITIES[activityId];
+    },
+
+    getCustomActivities() {
+        return Object.values(ALL_ACTIVITIES).filter(a => a.custom);
     },
 
     // Get today's totals by activity
