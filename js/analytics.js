@@ -55,25 +55,6 @@ const Analytics = {
         // Calculate sessions count
         const sessionCount = sessions.length;
 
-        // Find most tracked activity
-        const activityCounts = {};
-        sessions.forEach(s => {
-            activityCounts[s.activityId] = (activityCounts[s.activityId] || 0) + s.duration;
-        });
-
-        let mostTracked = 'None';
-        let maxDuration = 0;
-        Object.entries(activityCounts).forEach(([actId, duration]) => {
-            if (duration > maxDuration) {
-                maxDuration = duration;
-                mostTracked = activities[actId]?.name || actId;
-            }
-        });
-
-        // Calculate average session
-        const avgDuration = sessionCount > 0 ? totalMs / sessionCount : 0;
-        const avgFormatted = TimerManager.formatDuration(avgDuration);
-
         summaryEl.innerHTML = `
             <div class="summary-card">
                 <div class="summary-label">Total Time</div>
@@ -82,14 +63,6 @@ const Analytics = {
             <div class="summary-card">
                 <div class="summary-label">Sessions</div>
                 <div class="summary-value">${sessionCount}</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-label">Most Tracked</div>
-                <div class="summary-value">${mostTracked}</div>
-            </div>
-            <div class="summary-card">
-                <div class="summary-label">Avg Session</div>
-                <div class="summary-value">${avgFormatted}</div>
             </div>
         `;
     },
